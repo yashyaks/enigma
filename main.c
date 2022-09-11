@@ -1,30 +1,49 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <math.h>
 
 int main()
 {
 	char msg[10][10], en[10][10], enmsg[10][10];
-	int r,c,i,len,j,k,choice,determinant;
+	int r,c,i,j,k,choice,len,lencount=1,no_of_columns;
 	char message[20];
+
 	printf("Welcome to Enigma\n");
 	printf("What do you want to do:\n1. Encode a message\n2. Decode a message\n");
 	scanf("%d",&choice);
 	_flushall();
+
 	if(choice==1)
 	{
         printf("enter a message: ");
         gets(message);
         printf("%s\n",message);
         len=strlen(message);
-        printf("%d",len);
-        for(i=0;i<=len-1;i++)
+
+        no_of_columns=ceil(len/3);
+        //sets initial value of entire matrix to zero
+        for(r=0,i=0;r<=2;r++)
         {
-                msg[0][i]=message[i];
+            for(c=0;c<=no_of_columns;c++)
+            {
+                    msg[r][c]=0;
+            }
         }
-        for(i=0;i<=len;i++)
+        //converts message to matrix (now includes optimization for using all rows and columns)
+        for(r=0,i=0;r<=2;r++)
         {
-                msg[1][i]=0;
-                msg[2][i]=0;
+            for(c=0;c<=no_of_columns;c++)
+            {
+                if(lencount<=len)
+                {
+                    msg[r][c]=message[i];
+                    i++;
+                }
+                else
+                    break;
+                lencount++;
+            }
         }
 
         //enter a encoding matrix
@@ -39,25 +58,34 @@ int main()
         }
 
         //enigma
-        for(i=0;i<=3;i++)
+        for(i=0;i<=2;i++)
         {
-            for(j=0;j<=len;j++)
+            for(j=0;j<=no_of_columns;j++)
             {
                 enmsg[i][j]=0;
-                for(k=0;k<=3;k++)
+                for(k=0;k<=2;k++)
                 {
                     enmsg[i][j]=enmsg[i][j]+en[i][k]*msg[k][j];
                 }
             }
         }
+
         //displays encrypted message matrix
         for(r=0;r<=2;r++)
         {
-            for(c=0;c<=len-1;c++)
+            for(c=0;c<=no_of_columns;c++)
             {
-                printf("%d",enmsg[r][c]);
+                printf("%5d",enmsg[r][c]);
             }
             printf("\n");
+        }
+        //displays encrypted message(now optimized to display hex thus displaying readable output)
+        for(r=0;r<=2;r++)
+        {
+            for(c=0;c<=no_of_columns;c++)
+            {
+                printf("%x ",enmsg[r][c]);
+            }
         }
 	}
 	if (choice==2)
